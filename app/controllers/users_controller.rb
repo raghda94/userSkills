@@ -1,6 +1,12 @@
 class UsersController < ApplicationController
   # Authenticating on certain methods
   before_action :authenticate, except: [:create, :login]
+  def index
+    # @users = User.search(params[:first_name])
+    # if !@users.blank?
+    #   render json: @users, status: :ok
+    # end
+  end
 
 
  def create
@@ -17,13 +23,28 @@ class UsersController < ApplicationController
    end
  end
  def login
-   puts "**************************************************"
    @user = User.find_for_authentication(:email => params[:email])
-   if @user.valid_password?(params[:password])
-     sign_in(:user,@user)
+   if @user.valid_password?(params[:password]).to_s
      render json: @user, status: :ok
+   else
+     render status: 401
    end
  end
+ def add_skills
+   @skill_id = params[:skill_id]
+   @user_skill = UserSkill.new(:user_id => @current_user.id, :skill_id => @skill_id)
+   if @user_skill.save
+    render status: :created
+   else
+   render json: @user_skill.errors, status: 422
+   end
+end
+def search
+  @title = params[:title]
+  @skill= Skill.find_by(:title => @title)
+  @users = @skill.users
+  render json: @users
+end
   protected
 
   # Authenticate the user with the token based authentication

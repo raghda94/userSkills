@@ -4,7 +4,7 @@ class User < ApplicationRecord
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :trackable, :validatable
   attr_accessor :password
-  validates :email, :presence => true, :uniqueness => true  
+  validates :email, :presence => true, :uniqueness => true
 
 
 
@@ -12,7 +12,10 @@ class User < ApplicationRecord
 # Assign an API key when creating the User
 before_create :generate_api_key
 has_many :user_skills
-
+has_many :skills , through: :user_skills
+# def self.search(first_name)
+#   where(:first_name => first_name)
+# end
 
 private
   # Generate a unique API key
