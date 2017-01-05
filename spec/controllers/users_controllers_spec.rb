@@ -21,7 +21,7 @@ RSpec.describe UsersController, type: :controller do
        @user= User.create(:email => "raghda@gmail.com", :password => "raghda1994K")
        @request.headers[:Authorization] = "Token token=#{@user.api_key}"
        @skill= Skill.create(:title => "programming")
-       post :add_skills, {:skill_id => @skill.id, :user_id => @user.id,:expertise_level => 4}
+       post :add_skills, {:skill_title => @skill.title, :user_id => @user.id,:expertise_level => 4}
        expect(response.status).to eq(201)
      end
   end

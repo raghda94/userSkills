@@ -27,14 +27,27 @@ class UsersController < ApplicationController
  end
  # User adding skills to his profile with level of expertise from 1 to 5
  def add_skills
-   @skill_id = params[:skill_id]
+   @skill_title = params[:skill_title]
    @expertise_level= params[:expertise_level]
-   @user_skill = UserSkill.new(:user_id => @current_user.id, :skill_id => @skill_id, :expertise_level => @expertise_level)
-   if @user_skill.save
-    render status: :created
+   if Skill.exists?(title: params[:skill_title])
+     @skill_id = Skill.find_by(title: @skill_title).id
+     @user_skill = UserSkill.new(:user_id => @current_user.id, :skill_id => @skill_id, :expertise_level => @expertise_level)
+     if @user_skill.save
+      render status: :created
+     else
+     render json: @user_skill.errors, status: 422
+     end
    else
-   render json: @user_skill.errors, status: 422
-   end
+     @skill= Skill.new(:title => @skill_title)
+     if @skill.save
+      @user_skill = UserSkill.new(:user_id => @current_user.id, :skill_id => @skill.id, :expertise_level => @expertise_level)
+      if @user_skill.save
+       render status: :created
+      else
+      render json: @user_skill.errors, status: 422
+      end
+    end
+  end
 end
 # A user seraching for other users with specific skill
 def search
